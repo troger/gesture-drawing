@@ -1,0 +1,85 @@
+<html>
+  <head>
+    <title>Gesture Drawing</title>
+
+    <style type="text/css">
+      #currentImage {
+        text-align: center;
+      }
+
+      #currentImage img {
+        max-width: 800px;
+        width: 800px;
+      }
+    </style>
+
+    <script type="text/javascript" src="js/jquery-1.5.2.min.js"></script>
+
+    <script type="text/javascript">
+      <%@ val pictures: String %>
+      <%@ val timeInterval: Int %>
+      <%@ val baseURL: String %>
+      var baseURL = "${baseURL}";
+      var pictures = ${unescape(pictures)};
+      var timeInterval = ${timeInterval} * 60 * 1000;
+      var interval;
+      var nextImageIndex = 1;
+      var preloadedImage;
+
+      $(document).ready(function() {
+        var currentImage = $('<img />').attr('src', baseURL + pictures[0]);
+        $("#currentImage").append(currentImage);
+        if (pictures.length > 1) {
+          preloadedImage = $('<img />').attr('src', baseURL + pictures[nextImageIndex]);
+          startTimer()
+        }
+
+        if (pictures.length <= 1) {
+          $("#nextImageButton").attr('disabled', 'disabled')
+        }
+
+        $("#nextImageButton").click(function() {
+          displayNextImage();
+          restartTimer();
+        });
+
+      });
+
+      function startTimer() {
+        interval = setInterval(function(){
+          displayNextImage();
+        }, timeInterval);
+      }
+
+      function stopTimer() {
+        clearInterval(interval);
+      }
+
+      function restartTimer() {
+        stopTimer();
+        startTimer();
+      }
+
+      function displayNextImage() {
+        // display next image
+        nextImageIndex++;
+        if (nextImageIndex >= pictures.length) {
+          nextImageIndex = 0;
+        }
+        $("#currentImage").empty();
+        $("#currentImage").append(preloadedImage);
+        preloadedImage = $('<img />').attr('src', baseURL + pictures[nextImageIndex]);
+      }
+
+
+    </script>
+  </head>
+  <body>
+    <div id="tools">
+      <input id="nextImageButton" type="button" value="Next image!"/>
+    </div>
+
+    <div id="currentImage">
+    </div>
+  </body>
+</html>

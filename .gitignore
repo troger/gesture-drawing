@@ -1,0 +1,14 @@
+syntax: glob
+.DS_Store
+*.iml
+*.ipr
+*.iws
+.idea
+*.diff
+target/
+lib_managed/
+src_managed/
+project/boot/
+out
+pom.xml
+
