@@ -3,8 +3,8 @@ package fr.arnk
 import org.scalatra.scalate.ScalateSupport
 import org.scalatra.{ScalatraServlet, UrlSupport}
 import com.codahale.jerkson.Json._
-import java.io.FileInputStream
 import Configuration._
+import java.io.{File => JFile, FileInputStream}
 
 class GestureDrawingServlet extends ScalatraServlet with ScalateSupport with UrlSupport {
 
@@ -15,22 +15,23 @@ class GestureDrawingServlet extends ScalatraServlet with ScalateSupport with Url
   }
 
   protected def validPicturesPath: Boolean = {
-    val configFile = new java.io.File(ConfigFilePath)
+    val configFile = new JFile(ConfigFilePath)
     if (!configFile.exists()) {
-      new java.io.File(ConfigFolderPath).mkdirs()
+      new JFile(ConfigFolderPath).mkdirs()
       configFile.createNewFile()
       return false
     }
     val properties = new java.util.Properties()
     properties.load(new FileInputStream(configFile))
     val picturesPath = properties.getProperty("pictures.path")
-    if (!new java.io.File(picturesPath).exists()) return false
+    val picturesPathFile = new JFile(picturesPath)
+    if (!picturesPathFile.exists() || !picturesPathFile.isDirectory) return false
     return true
   }
 
   get("/") {
     if (!validPicturesPath) {
-      renderTemplate("/WEB-INF/no_valid_pictures_path.ssp")
+      renderTemplate("/WEB-INF/no_valid_pictures_path.ssp", ("configFilePath" -> ConfigFilePath))
     } else {
       val categories = getCategories
       categories match {
@@ -106,19 +107,24 @@ object GestureDrawingServlet {
 
   protected def loadPicturesCache() {
     if (!picturesCacheManager.picturesCacheLoaded) {
-      val configFile = new java.io.File(ConfigFilePath)
+      val configFile = new JFile(ConfigFilePath)
       val picturesPath = configFile.exists match {
         case true => getPicturesPathFromConfigFile(configFile)
-        case false => "."
+        case false => "." + JFile.separator
       }
       picturesCacheManager.load(picturesPath)
     }
   }
 
-  protected def getPicturesPathFromConfigFile(f: java.io.File) = {
+  protected def getPicturesPathFromConfigFile(f: JFile): String = {
     val properties = new java.util.Properties()
     properties.load(new FileInputStream(f))
-    properties.getProperty("pictures.path")
+    val picturesPath = properties.getProperty("pictures.path")
+    if (!picturesPath.endsWith(JFile.separator)) {
+      picturesPath + JFile.separator
+    } else {
+      picturesPath
+    }
   }
 
 }

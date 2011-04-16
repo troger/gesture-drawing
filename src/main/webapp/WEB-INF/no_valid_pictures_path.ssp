@@ -1,9 +1,10 @@
+<%@ val configFilePath: String%>
 <html>
   <head>
     <title>Gesture Drawing</title>
   </head>
   <body>
-    <p>Please provide a valide path in the gdrawing.config file (located in the ~/.gdrawing folder):</p>
+    <p>Please provide a valid path for the pictures in <code>${configFilePath}</code> file: </p>
     <pre>
       pictures.path=/path/to/pictures
     </pre>
