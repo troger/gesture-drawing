@@ -21,15 +21,20 @@ It was mainly done to play with Scala, [Scalatra](https://github.com/scalatra/sc
 
 ## Configure
 
-The configuration is done in the file `~/.gdrawing/gdrawing.config`. For now you can only configure the root path where the hierarchy of pictures will be found
+The configuration is done in the file `~/.gdrawing/gdrawing.conf`. For now you can only configure the root path where the hierarchy of pictures will be found
 
-    pictures.path=/path/to/pictures
+    pictures_path = "/path/to/pictures"
 
 ## Run
 
-### Using SBT
+### Using sbt
 
-You can launch the application to test it using the `jetty-run` SBT command.
+
+You can launch the application using:
+
+    $ java -jar sbt.jar run
+
+You can also use the `jetty-run` sbt command:
 
     $ sbt
     $ jetty-run
