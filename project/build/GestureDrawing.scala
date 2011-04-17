@@ -1,11 +1,15 @@
 import sbt._
 
 class GestureDrawing(info: ProjectInfo) extends DefaultWebProject(info){
+  // Scalatra
   val scalatraVersion = "2.0.0.M3"
   val scalatra = "org.scalatra" %% "scalatra" % scalatraVersion
   val scalate = "org.scalatra" %% "scalatra-scalate" % scalatraVersion
 
   val slf4jBinding = "ch.qos.logback" % "logback-classic" % "0.9.25" % "runtime"
+
+  // Configgy
+  val configgy = "net.lag" % "configgy" % "2.0.0" % "compile" intransitive()
 
   // jerkson
   val codaRepo = "Coda Hale's Repository" at "http://repo.codahale.com/"

@@ -1,12 +1,15 @@
 <%@ val configFilePath: String%>
+<%@ val reloadUrl: String%>
 <html>
   <head>
     <title>Gesture Drawing</title>
   </head>
   <body>
-    <p>Please provide a valid path for the pictures in <code>${configFilePath}</code> file: </p>
+    <p>Please provide a valid path for the pictures in <code>${configFilePath}</code> file (you may need to create it): </p>
     <pre>
-      pictures.path=/path/to/pictures
+      pictures_path=/path/to/pictures
     </pre>
+
+    <p>When done, <a href="${reloadUrl}">reload</a> the configuration.</p>
   </body>
 </html>

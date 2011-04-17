@@ -6,9 +6,9 @@ import tools.nsc.io._
 import com.codahale.jerkson.Json._
 import Configuration._
 
-case class PicturesCache(picturesPath: String, pictures: Map[String, List[String]], categories: List[String])
-
 class PicturesCacheManager {
+
+  case class PicturesCache(picturesPath: String, pictures: Map[String, List[String]], categories: List[String])
 
   var picturesCache: Option[PicturesCache] = None
 

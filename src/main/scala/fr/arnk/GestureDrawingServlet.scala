@@ -4,7 +4,7 @@ import org.scalatra.scalate.ScalateSupport
 import org.scalatra.{ScalatraServlet, UrlSupport}
 import com.codahale.jerkson.Json._
 import Configuration._
-import java.io.{File => JFile, FileInputStream}
+import tools.nsc.io.File
 
 class GestureDrawingServlet extends ScalatraServlet with ScalateSupport with UrlSupport {
 
@@ -12,26 +12,25 @@ class GestureDrawingServlet extends ScalatraServlet with ScalateSupport with Url
 
   before {
     contentType = "text/html"
+    configure()
   }
 
   protected def validPicturesPath: Boolean = {
-    val configFile = new JFile(ConfigFilePath)
-    if (!configFile.exists()) {
-      new JFile(ConfigFolderPath).mkdirs()
-      configFile.createNewFile()
-      return false
+    val picturesPath = config.getString("pictures_path")
+    picturesPath match {
+      case Some(pp) => {
+        val picturesPathFile = File(pp)
+        if (!picturesPathFile.exists || !picturesPathFile.isDirectory) return false
+        return true
+      }
+      case None => return false
     }
-    val properties = new java.util.Properties()
-    properties.load(new FileInputStream(configFile))
-    val picturesPath = properties.getProperty("pictures.path")
-    val picturesPathFile = new JFile(picturesPath)
-    if (!picturesPathFile.exists() || !picturesPathFile.isDirectory) return false
-    return true
+
   }
 
   get("/") {
-    if (!validPicturesPath) {
-      renderTemplate("/WEB-INF/no_valid_pictures_path.ssp", ("configFilePath" -> ConfigFilePath))
+    if (!configFileExists || !validPicturesPath) {
+      renderTemplate("/WEB-INF/no_valid_pictures_path.ssp", ("configFilePath" -> ConfigFilePath), ("reloadUrl" -> url("/reload")))
     } else {
       val categories = getCategories
       categories match {
@@ -66,6 +65,7 @@ class GestureDrawingServlet extends ScalatraServlet with ScalateSupport with Url
   }
 
   get("/reload") {
+    config.reload()
     reloadPicturesCache()
     redirect(url("/"))
   }
@@ -107,21 +107,19 @@ object GestureDrawingServlet {
 
   protected def loadPicturesCache() {
     if (!picturesCacheManager.picturesCacheLoaded) {
-      val configFile = new JFile(ConfigFilePath)
+      val configFile = File(ConfigFilePath)
       val picturesPath = configFile.exists match {
-        case true => getPicturesPathFromConfigFile(configFile)
-        case false => "." + JFile.separator
+        case true => getPicturesPathFromConfigFile
+        case false => "." + File.separator
       }
       picturesCacheManager.load(picturesPath)
     }
   }
 
-  protected def getPicturesPathFromConfigFile(f: JFile): String = {
-    val properties = new java.util.Properties()
-    properties.load(new FileInputStream(f))
-    val picturesPath = properties.getProperty("pictures.path")
-    if (!picturesPath.endsWith(JFile.separator)) {
-      picturesPath + JFile.separator
+  protected def getPicturesPathFromConfigFile: String = {
+    val picturesPath = config.getString("pictures_path", ".")
+    if (!picturesPath.endsWith(File.separator)) {
+      picturesPath + File.separator
     } else {
       picturesPath
     }
