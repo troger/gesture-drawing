@@ -8,7 +8,7 @@ class DirectoryParser(rootPath: String) {
     def parseDirectory(directory: Directory, parentDirectoryName: String): Map[String, List[String]] = {
       def addPicture(list: List[String], f: File): List[String] = {
         f.extension match {
-          case e if e.endsWith("png") || e.endsWith("jpg") => f.name :: list
+          case e if e.toLowerCase.endsWith("png") || e.toLowerCase.endsWith("jpg") => f.name :: list
           case e => list
         }
       }
