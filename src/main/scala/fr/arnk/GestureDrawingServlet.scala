@@ -5,6 +5,7 @@ import org.scalatra.{ScalatraServlet, UrlSupport}
 import com.codahale.jerkson.Json._
 import Configuration._
 import tools.nsc.io.File
+import collection.immutable.List._
 
 class GestureDrawingServlet extends ScalatraServlet with ScalateSupport with UrlSupport {
 
@@ -34,8 +35,19 @@ class GestureDrawingServlet extends ScalatraServlet with ScalateSupport with Url
     } else {
       val categories = getCategories
       categories match {
-        case Some(c) => renderTemplate("/WEB-INF/index.ssp", ("categories" -> c), ("postUrl" -> url("/slideshow")))
         case None => renderTemplate("/WEB-INF/error.ssp")
+        case Some(c) => {
+          val pictures = getPictures
+          val pieChart = pictures.get.foldLeft(Map[String, Int]())((map, t) => {
+            if (!t._2.isEmpty) {
+              map + (t._1 -> t._2.size)
+            } else {
+              map
+            }
+          })
+          renderTemplate("/WEB-INF/index.ssp", ("categories" -> c), ("postUrl" -> url("/slideshow")),
+            ("pieChartLegends" -> generate(pieChart.keys.toList)), ("pieChartValues" -> generate(pieChart.values.toList)))
+        }
       }
     }
 

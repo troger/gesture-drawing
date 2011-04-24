@@ -3,32 +3,73 @@
     <title>Gesture Drawing</title>
 
     <script type="text/javascript" src="js/jquery-1.5.2.min.js"></script>
+    <script type="text/javascript" src="js/g.raphael.standalone.min.js"></script>
+
+    <%@ val pieChartValues: String%>
+    <%@ val pieChartLegends: String%>
+    <script type="text/javascript" charset="utf-8">
+      $(document).ready(function() {
+        var r = Raphael("holder");
+        var pie = r.g.piechart(320, 300, 100, ${unescape(pieChartValues)},
+                {legend: ${unescape(pieChartLegends)},
+                 legendpos: "east"});
+        pie.hover(function () {
+            this.sector.stop();
+            this.sector.scale(1.1, 1.1, this.cx, this.cy);
+            if (this.label) {
+                this.label[0].stop();
+                this.label[0].scale(1.5);
+                this.label[1].attr({"font-weight": 800});
+            }
+        }, function () {
+            this.sector.animate({scale: [1, 1, this.cx, this.cy]}, 500, "bounce");
+            if (this.label) {
+                this.label[0].animate({scale: 1}, 500, "bounce");
+                this.label[1].attr({"font-weight": 400});
+            }
+        });
+      });
+    </script>
   </head>
   <body>
-    <h1></h1>
-
-
-    <%@ val postUrl: String%>
-    <form action="${postUrl}" method="post">
-      Time interval:
-      <input type="radio" name="timeInterval" value="1" checked="checked"> 1
-      <input type="radio" name="timeInterval" value="2"> 2
-      <input type="radio" name="timeInterval" value="5"> 5
-      <input type="radio" name="timeInterval" value="10"> 10
-      <input type="radio" name="timeInterval" value="15"> 15
-      <input type="radio" name="timeInterval" value="20"> 20
-      <input type="radio" name="timeInterval" value="30"> 30
-      <ul>
-      <%@ val categories: List[String]%>
-      #for (category <- categories)
-        <li>
-          <input type="checkbox" name="category" value="${category}"> ${category}
-        </li>
-      #end
-      </ul>
-
-      <input type="submit" value="Go!"/>
-    </form>
-
+  <table>
+    <tbody>
+    <tr>
+      <td>
+        <%@ val postUrl: String%>
+        <form action="${postUrl}" method="post">
+          Time interval (in minutes):
+          <input type="radio" name="timeInterval" id="timeInterval1" value="1" checked="checked">
+          <label for="timeInterval1">1</label>
+          <input type="radio" name="timeInterval" id="timeInterval2" value="2">
+          <label for="timeInterval2">2</label>
+          <input type="radio" name="timeInterval" id="timeInterval5" value="5">
+          <label for="timeInterval5">5</label>
+          <input type="radio" name="timeInterval" id="timeInterval10" value="10">
+          <label for="timeInterval10">10</label>
+          <input type="radio" name="timeInterval" id="timeInterval15" value="15">
+          <label for="timeInterval15">15</label>
+          <input type="radio" name="timeInterval" id="timeInterval20" value="20">
+          <label for="timeInterval20">20</label>
+          <input type="radio" name="timeInterval" id="timeInterval30" value="30">
+          <label for="timeInterval30">30</label>
+          <ul>
+          <%@ val categories: List[String]%>
+          #for (category <- categories)
+            <li>
+              <input type="checkbox" name="category" id="${category}" value="${category}">
+              <label for="${category}">${category}</label>
+            </li>
+          #end
+          </ul>
+          <input type="submit" value="Go!"/>
+        </form>
+      </td>
+      <td>
+        <div id="holder"></div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
   </body>
 </html>
