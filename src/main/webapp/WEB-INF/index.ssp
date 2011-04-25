@@ -28,6 +28,15 @@
                 this.label[1].attr({"font-weight": 400});
             }
         });
+
+        pie.click(function() {
+          var ele = $("#" + this.label[1].attr("text").replace(/\//g, "-"));
+          if (ele.attr("checked")) {
+            ele.removeAttr("checked");
+          } else {
+            ele.attr('checked','checked');
+          }
+        });
       });
     </script>
   </head>
@@ -57,8 +66,8 @@
           <%@ val categories: List[String]%>
           #for (category <- categories)
             <li>
-              <input type="checkbox" name="category" id="${category}" value="${category}">
-              <label for="${category}">${category}</label>
+              <input type="checkbox" name="category" id="${category.replaceAll("/", "-")}" value="${category}">
+              <label for="${category.replaceAll("/", "-")}">${category}</label>
             </li>
           #end
           </ul>
